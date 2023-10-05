@@ -1,4 +1,4 @@
-# Mt. Timpanogos via the Timpooneke Trail
+# Flat Top Lookout Tower Via Green Knob Trail
 
 #### Route map
 
