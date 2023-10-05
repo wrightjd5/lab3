@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset=utf-8 />
+	<title>Map Template Browser Title</title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.css" />
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
+	<link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet">
+
+	<style>
+		body {
+			margin: 0;
+            padding: 0;
+            background: "whitesmoke";
+            font-family: "Noto Sans", sans-serif;
+            color: #3d3d3d;
+
+		}
+
+		h1 {
+			position: absolute;
+    		top: 5%; /* Position the top of the element at the middle of the container */
+    		left: 50%; /* Position the left side of the element at the center of the container */
+    		transform: translate(-50%, -50%); /* Center the element both horizontally and vertically */
+    		font-size: 2em;
+    		font-family: "Lora", serif;
+    		letter-spacing: .04em;
+    		padding: 10px 15px;
+    		background: rgba(256, 256, 256);
+    		border: 1px solid grey;
+    		border-radius: 3px;
+   			z-index: 800;
+		}
+
+		h2 {
+			font-family: "Lora", serif;
+			letter-spacing: .04em;
+		}
+
+		#map {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 100%;
+		}
+
+		section {
+			position: absolute;
+			bottom: 0;
+			left: 10px;
+			width: 280px;
+			margin: 20px auto;
+			padding: 0 15px;
+			background: rgba(256, 256, 256);
+			border: 1px solid grey;
+			border-radius: 3px;
+			z-index: 800;
+		}
+
+		p {
+			font-size: .9em;
+			line-height: 1.5em;
+		}
+
+		a {
+			color: #005daa;
+			text-decoration: none;
+		}
+
+		a:hover {
+			text-decoration: underline;
+		}
+	</style>
+</head>
+
+<body>
+
+	<h1>Green Knob Trailhead to Flat Top Lookout Tower.</h1>
+
+	<div id='map'></div>
+
+	<section>
+		<h2>About This Map</h2>
+
+		<p>Embark on a breathtaking journey through the scenic landscapes of Boone, NC, starting from the Green Knob Trailhead. Lace up your hiking boots and set off on the Green Knob Trail, a nature lover's paradise.  </p>
+
+		<p>Your adventure continues as you make your way to Hebron Falls Trailhead, a hidden gem nestled amidst the wilderness. Here, the sounds of cascading water greet you, inviting you to pause and marvel at the beauty of Hebron Falls. </p>
+
+		<p> Your next destination is the Flat Top Lookout Tower, a vantage point that promises awe-inspiring panoramas of the surrounding landscapes.  As you gaze upon the nature below, let the tranquility of the wilderness rejuvenate your spirit and inspire your soul.</p>
+		<p> Source: <a href="https://chat.openai.com/">Chat GPT</a></p>
+			
+		<p>Learn more here: <a href="https://www.alltrails.com/trail/us/north-carolina/green-knob-loop--2">Green Loop</a></p>
+			
+		<p>Map author: Jason Wright</p>
+
+	</section>
+
+	<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+
+	<script src="data/route3.js"></script> //DATA LOADED here
+
+	<script>
+
+//options to be used when creating the map
+		var options = {
+			center: [36.14247, -81.71977],
+			zoom: 16
+		}
+
+//creation of the Leaflet map
+		var map = L.map('map', options);
+
+//request to load basemap
+var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+}).addTo(map);
+
+//string content to be inserted into a tooltip
+//		var message = 'Green Knob Trailhead!';
+
+//create a Leaflet marker, centered on the map's center.
+//		L.marker(map.getCenter())
+//			.bindTooltip(message) //bind the tooltip and message to the marker
+//			.addTo(map) // add the marker to the map`
+//			.openTooltip(); // open the tooltip
+
+var myRoute= L.geoJson(data, {
+	filter: function(feature) {
+		if(feature.geometry.type == "LineString") {
+			return feature;
+		}
+	},
+	style: function(feature) {
+		return {
+			color: "#4CAF50",
+			weight: 5,
+			opacity: 0.7,
+			dashArray: "3, 3"
+
+		}
+	}
+	}).addTo(map);
+
+	var myStops = L.geoJson(data, {
+		filter: function(feature) {
+			if(feature.geometry.type == "Point") {
+				return feature;
+			}
+		},
+		onEachFeature: function(feature, layer) {
+			layer.bindTooltip(feature.properties['name']);
+		}
+	}).addTo(map);
+
+	map.fitBounds(myRoute.getBounds());
+
+	</script>
+
+</body>
+
+</html>
